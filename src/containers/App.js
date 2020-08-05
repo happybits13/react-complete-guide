@@ -1,7 +1,12 @@
 import React, {Component} from 'react';
 import './App.css';
+// Method 3 of applying css
+//import classes from './App.css';
 
-import Person from './Person/Person';
+import Persons from '../components/Persons/Persons';
+import Cockpit from '../components/Cockpit/Cockpit';
+import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary'
+
 
 // This is a css library that allows more advance features for style objects
 // StyleRoot is to allow advanced css features (media queries) for style objects
@@ -82,6 +87,7 @@ deletePersonHandler = (personsIndex) => {
 
 // return rendered jsx within (from React)
 render() {
+  console.log('Render')
   // in-line style: styling in js without css
   const buttonStyle = {
     backgroundColor: 'green',
@@ -102,22 +108,13 @@ render() {
   if (this.state.showPerson){
     // Map list to components
     persons = (
-      this.state.persons.map((person, index) => {
-        return <Person 
-          name={person.name} 
-          age={person.age}
-          //changed={this.nameChangedHandler.bind(this, event, person.id)}
-          changed={(event) => this.nameChangedHandler(event, person.id)}
-          
-          // index of each list element passed into method
-          click={this.deletePersonHandler.bind(this, index)}
-          // the other way of binding method to component
-          //click={(index) => this.deletePersonHandler(index)}
-          // note that index is not a good key. index change when your list change. for good id, use unique id assigned(from db perhaps)
-          // always create a key in components generated from a list. allows react to check for state changes
-          key={person.id}>
-        </Person>
-      })
+      <div>
+        <Persons
+          persons={this.state.persons}
+          clicked={this.deletePersonHandler}
+          changed={this.nameChangedHandler}>
+        </Persons>
+      </div>
     )
     buttonStyle.backgroundColor = 'red';
     buttonStyle[':hover'] = {
@@ -126,22 +123,27 @@ render() {
     }
   }
 
-  let classes = [];
+  let paraClasses = [];
   if (this.state.persons.length < 3)
-    classes.push('red');
+    paraClasses.push('red');
   if (this.state.persons.length < 2)
-    classes.push('bold');
+    paraClasses.push('bold');
   
   // convert ['red', 'bold'] to 'red bold'
-  classes = classes.join(' ');
+  paraClasses = paraClasses.join(' ');
 
   return (
+    
     //<StyleRoot>
     <div className="App">
-      <h1> This is a react app </h1>
-      <p className={classes}>Easy</p>
-      
-      <button style={buttonStyle} onClick={this.togglePersonHandler}>Toggle persons</button>
+      <Cockpit
+      title = {this.props.appTitle}
+      classes = {paraClasses}
+      buttonStyle = {buttonStyle}
+      clicked = {this.togglePersonHandler}
+      />
+
+  
       {persons}
 
     </div>

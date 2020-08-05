@@ -5,7 +5,7 @@ import './Person.css';
 //import Radium from 'radium'
 
 // Another css library
-import styled from 'styled-components'
+//import styled from 'styled-components'
 
 
 const person = (props) => {
@@ -15,10 +15,16 @@ const person = (props) => {
     //     }
     // }
     return(
-    <div className="Person" style={style}>
-        <p onClick={props.click}>Name: {props.name}, Age: {props.age}</p>
+    <div className="Person">
+        <p onClick={props.click}>
+            Name: {props.name}, Age: {props.age}
+        </p>
         <p>{props.children}</p>
-        <input type="text" onChange={props.changed} values={props.name}></input>
+        <input 
+            type="text" 
+            onChange={props.changed} 
+            values={props.name}>
+        </input>
     </div>
 
     );
