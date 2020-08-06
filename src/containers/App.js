@@ -6,7 +6,7 @@ import './App.css';
 import Persons from '../components/Persons/Persons';
 import Cockpit from '../components/Cockpit/Cockpit';
 import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary'
-
+import AuthContext from '../context/auth-context';
 
 // This is a css library that allows more advance features for style objects
 // StyleRoot is to allow advanced css features (media queries) for style objects
@@ -19,6 +19,8 @@ import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary'
 
 class App extends Component {
 
+static contextType = AuthContext;
+
 // Standadise way to define state. Just an object. Modern practice uses ReactHook
 state = {
   persons: [
@@ -29,6 +31,72 @@ state = {
   showPerson: false,
   otherState:'doesnt matter'
 }
+
+//============
+// Component creation lifecycle hook (Only avil in class component, not functional)
+//============
+// constructor(props) -> Call super(props), set up state
+// getDerivedStateFromProps(props, state) -> Sync state to props
+// render -> prepare and structure jsx code. this is below
+//*** componentDidMount() -> Side effects. code that is not within this file
+
+// ============
+// Component update lifecycle hook(Only avail in class Component, not functional)
+// ============
+
+// 1) Lifecycle hook purpose: Sync state to props
+static getDerivedStateFromProps(props, state){
+  // this lifecycle hook sets class state from return-ed state
+  console.log('[App.js] getDerivedStateFromProps');
+  return state;
+}
+
+// 2) Lifecycle hook purpose: Decide whether to continue lifecycle or not
+// ***
+shouldComponentUpdate(nextProps, nextState){
+  // this lifecycle hook must return a true false to indicate to proceed or stop lifecycle
+  console.log('[App.js] shouldComponentUpdate');
+  
+  return true;
+  // Eg of usage
+  // if (nextProps.persons !== this.state.persons){
+  //   return true;
+  // }
+  // else{
+  //   return false;
+  // }
+}
+
+// 3) Lifecycle hook purpose: Last minute DOM ops (post render)
+// getSnapshotBeforeUpdate(prevProps, prevState){
+
+// }
+
+
+// 4) Lifecycle hook purpose: render jsx
+// render()
+
+
+// 5) Lifecycle hook purpose: Cause side effect. Other code not within this file
+componentDidUpdate(){
+  console.log('[App.js] componentDidUpdate');
+}
+
+
+
+
+
+// Lifecycle hook purpose: Prepare and structure jsx code
+// render(){
+// return(
+    //some jsx code. this hook alrdy defined below
+//   )
+// }
+
+
+
+
+
 
 // Instance method
 switchNameHandler = (newName) => {
@@ -64,6 +132,11 @@ nameChangedHandler = (event, id) => {
 
   // first parameter will take from the state. second is what you want to set
   this.setState( {persons: persons} );
+  // setState can take in object or function
+  // optional way of writing (Fxn): This is better if you are referencing states in setState
+  // this.setState((prevState,props) => {
+  //   return {persons:persons}
+  // });
 }
 
 // flip the state of showPerson
@@ -82,11 +155,20 @@ deletePersonHandler = (personsIndex) => {
 
 
   persons.splice(personsIndex , 1);
-  this.setState({persons: persons})
+  this.setState({persons: persons});
 }
+
+loginHandler = () => {
+  this.setState({authenticated: true});
+}
+
+
 
 // return rendered jsx within (from React)
 render() {
+// this.context.authenticated = false;
+// this.context.login = this.loginHandler;
+
   console.log('Render')
   // in-line style: styling in js without css
   const buttonStyle = {
@@ -110,6 +192,7 @@ render() {
     persons = (
       <div>
         <Persons
+          isAuth={this.state.authenticated}
           persons={this.state.persons}
           clicked={this.deletePersonHandler}
           changed={this.nameChangedHandler}>
@@ -133,20 +216,22 @@ render() {
   paraClasses = paraClasses.join(' ');
 
   return (
-    
+
     //<StyleRoot>
-    <div className="App">
-      <Cockpit
-      title = {this.props.appTitle}
-      classes = {paraClasses}
-      buttonStyle = {buttonStyle}
-      clicked = {this.togglePersonHandler}
-      />
+    <AuthContext.Provider value={{authenticated: this.state.authenticated, login: this.loginHandler}}>
 
-  
+    
+      <div className="App">
+        <Cockpit
+          title = {this.props.appTitle}
+          classes = {paraClasses}
+          buttonStyle = {buttonStyle}
+          clicked = {this.togglePersonHandler}
+        />
+      
       {persons}
-
-    </div>
+      </div>
+    </AuthContext.Provider>
    //</StyleRoot>
   );
   // this is what happens in the background jsx(html in js) code above

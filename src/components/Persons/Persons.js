@@ -4,7 +4,8 @@ import Person from './Person/Person';
 const persons = (props) => {
     return(
         props.persons.map((person, index) => {
-            return <Person 
+            return <Person
+            //isAuth={props.isAuth} 
             name={person.name} 
             age={person.age}
             //changed={this.nameChangedHandler.bind(this, event, person.id)}
